@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volume Roulette</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 Volume Roulette 🎰</h1>
+        <p class="subtitle">Spin the wheel and let fate control your volume!</p>
+        
+        <div class="info-panel">
+            <div class="volume-display">
+                <span class="label">Current Volume:</span>
+                <span class="value" id="currentVolume">50%</span>
+            </div>
+            <div class="volume-bar-container">
+                <div class="volume-bar" id="volumeBar"></div>
+            </div>
+        </div>
+
+        <div class="roulette-container">
+            <div class="roulette-wheel" id="rouletteWheel">
+                <svg class="wheel-svg" id="wheelSvg" viewBox="0 0 500 500">
+                    <circle cx="250" cy="250" r="240" fill="#2c3e50" stroke="#1a1a1a" stroke-width="4"/>
+                    <g id="wheelSegments"></g>
+                </svg>
+                <div class="wheel-center"></div>
+                <div class="pointer"></div>
+            </div>
+        </div>
+
+        <button class="spin-button" id="spinButton" onclick="spinRoulette()">SPIN</button>
+        
+        <div class="result-panel" id="resultPanel" style="display: none;">
+            <h2 id="resultText"></h2>
+            <p id="volumeChangeText"></p>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="color-indicator red"></span>
+                <span>Red = Volume Up</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-indicator black"></span>
+                <span>Black = Volume Down</span>
+            </div>
+            <div class="legend-item">
+                <span class="color-indicator green"></span>
+                <span>Green (0) = Random Volume</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
