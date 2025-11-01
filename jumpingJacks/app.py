@@ -1,4 +1,5 @@
 from flask import Flask, render_template, Response, jsonify
+import random
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -17,7 +18,6 @@ pose = mp_pose.Pose(
 # Global variables
 jumping_jacks_count = 0
 is_tracking = False
-volume_increment = 1
 volume_up = True
 
 # Set macOS volume
@@ -94,7 +94,7 @@ class JumpingJackDetector:
                 self.left_arm_down = False
                 self.right_arm_down = False
                 global volume_up
-                
+                volume_increment = random.randint(1, 10)
                 if get_volume() == 100:
                     volume_up = False
                 elif get_volume() == 0:
