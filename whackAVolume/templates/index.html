@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whack-A-Volume</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .stat-card h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .volume-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .volume-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .hole {
+            aspect-ratio: 1;
+            background: radial-gradient(circle at center, #8B4513 0%, #5D2F0F 100%);
+            border: 4px solid #654321;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .mole {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: popUp 0.5s ease-out;
+            background: radial-gradient(circle at 30% 30%, #D4A574 0%, #B8860B 100%);
+            border-radius: 50%;
+        }
+
+        .mole-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        @keyframes popUp {
+            0% {
+                transform: translateY(100%) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: translateY(-10%) scale(1.1);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .hole:hover .mole {
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .hole:active .mole {
+            transform: scale(0.95);
+        }
+
+        .hole.hit .mole {
+            animation: hitAnimation 0.3s ease;
+        }
+
+        @keyframes hitAnimation {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.3);
+            }
+            100% {
+                transform: translateY(100%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .instructions p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .game-status {
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .mole-number {
+                font-size: 1.2rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔊 Whack-A-Volume</h1>
+            <p>Moles pop up with volume numbers - whack them to set your volume!</p>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 How to Play:</h3>
+            <p>
+                Click "Start Game" to begin. Moles will randomly pop up from holes, each showing a volume number (1-100). 
+                Click on a mole to whack it and set your volume to that number! Try to whack as many as you can!
+            </p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Score</h3>
+                <div class="value" id="score">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Current Volume</h3>
+                <div class="value" id="volume">0%</div>
+                <div class="volume-bar">
+                    <div class="volume-fill" id="volume-fill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="game-status" class="game-status status-inactive">
+            🟢 Game Stopped - Click "Start Game" to begin!
+        </div>
+
+        <div class="grid-container" id="grid"></div>
+
+        <div class="controls">
+            <button class="btn btn-success" onclick="startGame()">▶ Start Game</button>
+            <button class="btn btn-danger" onclick="stopGame()">⏸ Stop Game</button>
+            <button class="btn btn-secondary" onclick="resetGame()">🔄 Reset Score</button>
+        </div>
+    </div>
+
+    <script>
+        let grid = [];
+        let oldGrid = [];
+        let score = 0;
+        let gameActive = false;
+        const holeElements = [];
+
+        // Initialize grid on first load
+        function initializeGrid() {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.innerHTML = '';
+            
+            for (let row = 0; row < 10; row++) {
+                holeElements[row] = [];
+                for (let col = 0; col < 10; col++) {
+                    const hole = document.createElement('div');
+                    hole.className = 'hole';
+                    hole.id = `hole-${row}-${col}`;
+                    hole.onclick = () => hitMole(row, col, hole);
+                    gridContainer.appendChild(hole);
+                    holeElements[row][col] = hole;
+                }
+            }
+        }
+
+        // Load grid data
+        function loadGrid() {
+            fetch('/grid')
+                .then(response => response.json())
+                .then(data => {
+                    oldGrid = grid;
+                    grid = data.grid;
+                    score = data.score;
+                    gameActive = data.game_active;
+                    updateGrid();
+                    updateStats();
+                    updateGameStatus();
+                })
+                .catch(error => console.error('Error loading grid:', error));
+        }
+
+        // Update grid incrementally
+        function updateGrid() {
+            for (let row = 0; row < 10; row++) {
+                for (let col = 0; col < 10; col++) {
+                    const hole = holeElements[row][col];
+                    const hasMole = grid[row][col] !== 0;
+                    const hadMole = oldGrid[row] && oldGrid[row][col] !== 0;
+                    
+                    // Only update if state changed
+                    if (hasMole !== hadMole) {
+                        if (hasMole) {
+                            // Add mole
+                            const mole = document.createElement('div');
+                            mole.className = 'mole';
+                            const number = document.createElement('div');
+                            number.className = 'mole-number';
+                            number.textContent = grid[row][col];
+                            mole.appendChild(number);
+                            hole.innerHTML = '';
+                            hole.appendChild(mole);
+                        } else {
+                            // Remove mole
+                            hole.innerHTML = '';
+                        }
+                    } else if (hasMole && grid[row][col] !== oldGrid[row][col]) {
+                        // Update number if it changed
+                        const moleNumber = hole.querySelector('.mole-number');
+                        if (moleNumber) {
+                            moleNumber.textContent = grid[row][col];
+                        }
+                    }
+                }
+            }
+        }
+
+        // Handle mole hit
+        function hitMole(row, col, holeElement) {
+            fetch('/hit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ row, col })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Add hit animation
+                        holeElement.classList.add('hit');
+                        
+                        // Remove mole after animation
+                        setTimeout(() => {
+                            holeElement.classList.remove('hit');
+                            holeElement.innerHTML = '';
+                        }, 300);
+                        
+                        // Update score
+                        score = data.score;
+                        updateStats();
+                    }
+                })
+                .catch(error => console.error('Error hitting mole:', error));
+        }
+
+        // Start game
+        function startGame() {
+            fetch('/start', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        gameActive = true;
+                        updateGameStatus();
+                    }
+                })
+                .catch(error => console.error('Error starting game:', error));
+        }
+
+        // Stop game
+        function stopGame() {
+            fetch('/stop', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        gameActive = false;
+                        updateGameStatus();
+                        loadGrid();
+                    }
+                })
+                .catch(error => console.error('Error stopping game:', error));
+        }
+
+        // Reset game
+        function resetGame() {
+            fetch('/reset', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        score = 0;
+                        loadGrid();
+                    }
+                })
+                .catch(error => console.error('Error resetting game:', error));
+        }
+
+        // Update stats display
+        function updateStats() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('score').textContent = data.score;
+                    document.getElementById('volume').textContent = data.current_volume + '%';
+                    
+                    const volumeFill = document.getElementById('volume-fill');
+                    volumeFill.style.width = data.current_volume + '%';
+                    volumeFill.textContent = data.current_volume + '%';
+                    
+                    gameActive = data.game_active;
+                    updateGameStatus();
+                })
+                .catch(error => console.error('Error updating status:', error));
+        }
+
+        // Update game status display
+        function updateGameStatus() {
+            const statusElement = document.getElementById('game-status');
+            if (gameActive) {
+                statusElement.textContent = '🔴 Game Active - Whack those moles!';
+                statusElement.className = 'game-status status-active';
+            } else {
+                statusElement.textContent = '🟢 Game Stopped - Click "Start Game" to begin!';
+                statusElement.className = 'game-status status-inactive';
+            }
+        }
+
+        // Initial load
+        initializeGrid();
+        loadGrid();
+        
+        // Update grid and status every 500ms
+        setInterval(() => {
+            loadGrid();
+            updateStats();
+        }, 500);
+    </script>
+</body>
+</html>
