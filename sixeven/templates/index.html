@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Six-Seven Meme Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Six-Seven Meme Detector</h1>
+            <p class="subtitle">Make the seesaw hand gesture with both hands (palms up) to trigger detection!</p>
+        </header>
+        
+        <main>
+            <div class="video-container">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas"></canvas>
+                <div id="detection-status" class="detection-status">
+                    <span class="status-text">Waiting for gesture...</span>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="info-item">
+                    <strong>Instructions:</strong>
+                    <ul>
+                        <li>Hold both hands with palms facing upward</li>
+                        <li>Move them up and down in a seesaw motion</li>
+                        <li>Keep both hands visible to the camera</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <!-- MediaPipe Camera Utils -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <!-- MediaPipe Drawing Utils -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <!-- Our detector script -->
+    <script src="{{ url_for('static', filename='js/detector.js') }}"></script>
+</body>
+</html>
+
